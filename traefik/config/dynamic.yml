@@ -1,0 +1,401 @@
+http:
+  routers:
+    Authentik:
+      rule: Host(`auth.buffon.cloud`)
+      entryPoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: Authentik-service
+    Bitmagnet:
+      rule: Host(`magnet.buffon.cloud`)
+      entryPoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: Bitmagnet-service
+      middlewares:
+        - authentik
+    Sonarr:
+      rule: Host(`sonarr.buffon.cloud`)
+      entryPoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: Sonarr-service
+      middlewares:
+        - authentik
+    Grafana:
+      rule: Host(`grafana.buffon.cloud`)
+      entryPoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: Grafana-service
+    Radarr:
+      rule: Host(`radarr.buffon.cloud`)
+      entryPoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: Radarr-service
+      middlewares:
+        - authentik
+    Tautulli:
+      rule: Host(`tautulli.buffon.cloud`)
+      entryPoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: Tautulli-service
+      middlewares:
+        - authentik
+    Yamtrack:
+      rule: Host(`track.buffon.cloud`)
+      entryPoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: Yamtrack-service
+    Prowlarr:
+      rule: Host(`prowlarr.buffon.cloud`)
+      entryPoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: Prowlarr-service
+      middlewares:
+        - authentik
+    Shinkro:
+      rule: Host(`shinkro.buffon.cloud`)
+      entryPoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: Shinkro-service
+      middlewares:
+        - anubis@file
+    PVE:
+      rule: Host(`pve.buffon.cloud`)
+      entryPoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: PVE-service
+    NginxProxyManager:
+      rule: Host(`nginx.buffon.cloud`)
+      entryPoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: NginxProxyManager-service
+    Portainer:
+      rule: Host(`portainer.buffon.cloud`)
+      entryPoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: Portainer-service
+    Pi-Hole:
+      rule: Host(`pihole.buffon.cloud`)
+      entryPoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: Pi-Hole-service
+      middlewares:
+        - authentik
+    Pi-Hole Backup:
+      rule: Host(`piholebk.buffon.cloud`)
+      entryPoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: Pi-Hole Backup-service
+      middlewares:
+        - authentik
+    PVE Nuc:
+      rule: Host(`pvenuc.buffon.cloud`)
+      entryPoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: PVE Nuc-service
+    Nextcloud:
+      rule: Host(`next.buffon.cloud`)
+      entryPoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: Nextcloud-service
+    N8N:
+      rule: Host(`n8n.buffon.cloud`)
+      entryPoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: N8N-service
+    Notifiarr:
+      rule: Host(`notifiarr.buffon.cloud`)
+      entryPoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: Notifiarr-service
+      middlewares:
+        - authentik
+    PBS:
+      rule: Host(`pbs.buffon.cloud`)
+      entryPoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: PBS-service
+    Speedtest:
+      rule: Host(`speedtest.buffon.cloud`)
+      entryPoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: Speedtest-service
+    qBittorrent:
+      rule: Host(`torrent.buffon.cloud`)
+      entryPoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: qBittorrent-service
+      middlewares:
+        - authentik
+    Vaultwarden:
+      rule: Host(`vault.buffon.cloud`)
+      entryPoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: Vaultwarden-service
+    Uptime-Kuma:
+      rule: Host(`uptime.buffon.cloud`)
+      entryPoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: Uptime-Kuma-service
+      middlewares:
+        - authentik
+    Gitea:
+      rule: Host(`git.buffon.cloud`)
+      entryPoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: Gitea-service
+    searXNG:
+      rule: Host(`buffon.cloud`) || Host(`www.buffon.cloud`)
+      entryPoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: searXNG-service
+    Plex:
+      rule: Host(`plex.buffon.cloud`)
+      entryPoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: Plex-service
+    Traefik-Manager:
+      rule: Host(`manager.buffon.cloud`)
+      entryPoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: Traefik-Manager-service
+      middlewares:
+        - authentik
+    mailcow:
+      entryPoints:
+        - https
+      rule: "Host(`mail.buffon.cloud`)"
+      service: mailcow-service
+      tls:
+        certResolver: cloudflare
+    mailcow-autoconfig:
+      entryPoints:
+        - https
+      rule: "(Host(`autoconfig.buffon.cloud`) && Path(`/mail/config-v1.1.xml`))"
+      service: mailcow-service
+      tls:
+        certResolver: cloudflare
+    mailcow-autodiscover:
+      entryPoints:
+        - https
+      rule: "(Host(`autodiscover.buffon.cloud`) && Path(`/autodiscover/autodiscover.xml`))"
+      service: mailcow-service
+      tls:
+        certResolver: cloudflare
+    Anubis:
+      rule: Host(`anubis.buffon.cloud`)
+      entryPoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: Anubis-service
+  services:
+    Authentik-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.243:9000
+    Bitmagnet-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.252:3333
+    Sonarr-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.252:8989
+    Grafana-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.240:3000
+    traefik-manager-service:
+      loadBalancer:
+        servers:
+          - url: http://traefik-manager:5000
+    Radarr-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.252:7878
+    Tautulli-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.252:8181
+    Yamtrack-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.2:8001
+    Prowlarr-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.252:9696
+    Shinkro-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.2:7011
+    PVE-service:
+      loadBalancer:
+        servers:
+          - url: https://10.84.181.254:8006
+    NginxProxyManager-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.246:81
+    Portainer-service:
+      loadBalancer:
+        servers:
+          - url: https://10.84.181.2:9443
+    Pi-Hole-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.245:80
+    Pi-Hole Backup-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.242:80
+    PVE Nuc-service:
+      loadBalancer:
+        servers:
+          - url: https://10.84.181.253:8006
+    Nextcloud-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.248:11000
+    N8N-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.244:5678
+    Notifiarr-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.252:5454
+    PBS-service:
+      loadBalancer:
+        servers:
+          - url: https://10.84.181.230:8007
+    Speedtest-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.2:10808
+    qBittorrent-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.252:2081
+    Vaultwarden-service:
+      loadBalancer:
+        servers:
+          - url: https://10.84.181.247:8000
+    Uptime-Kuma-service:
+      loadBalancer:
+        servers:
+          - url: http://172.17.0.3:3001
+    Gitea-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.33:3000
+    searXNG-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.241:8888
+    Plex-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.5:32400
+    Traefik-Manager-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.2:5000
+    mailcow-service:
+      loadBalancer:
+        servers:
+          - url: "https://10.84.181.251:443"
+    Anubis-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.2:8923
+  middlewares:
+    crowdsec-bouncer:
+      forwardAuth:
+        address: http://10.84.181.2:8922/api/v1/forwardAuth
+        trustForwardHeader: true
+    authentik:
+      forwardAuth:
+        address: http://10.84.181.243:9000/outpost.goauthentik.io/auth/traefik
+        trustForwardHeader: true
+        authResponseHeaders:
+          - X-authentik-username
+          - X-authentik-groups
+          - X-authentik-entitlements
+          - X-authentik-email
+          - X-authentik-name
+          - X-authentik-uid
+          - X-authentik-jwt
+          - X-authentik-meta-jwks
+          - X-authentik-meta-outpost
+          - X-authentik-meta-provider
+          - X-authentik-meta-app
+          - X-authentik-meta-version
+          # Add the 'authorization' header to authResponseHeaders if you need proxy providers which
+          # send a custom HTTP-Basic Authentication header based on values from authentik
+          # - authorization
+    anubis:
+      forwardAuth:
+        address: http://10.84.181.2:8923/.within.website/x/cmd/anubis/api/check
+        trustForwardHeader: true
+        authRequestHeaders:
+          - X-Forwarded-Proto
+          - X-Forwarded-Host
+          - X-Forwarded-Uri
+          - X-Forwarded-For
+        authResponseHeaders:
+          - X-Forwarded-User
+          - X-Forwarded-Email

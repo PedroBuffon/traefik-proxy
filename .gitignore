@@ -1,0 +1,9 @@
+anubis/logs/
+anubis/anubis.bdb
+crowdsec/database/
+crowdsec/config/local_api_credentials.yaml
+crowdsec/config/online_api_credentials.yaml
+crowdsec/config/notifications/discord.yaml
+manager/
+traefik/logs/
+.env

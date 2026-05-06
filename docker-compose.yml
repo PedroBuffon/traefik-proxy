@@ -1,0 +1,184 @@
+services:
+  traefik:
+    image: traefik:latest
+    container_name: traefik
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges=true
+    ports:
+      - target: 80
+        published: 80
+        protocol: tcp
+        mode: host
+      - target: 443
+        published: 443
+        protocol: tcp
+        mode: host
+      - target: 8080
+        published: 8080
+        protocol: tcp
+        mode: host
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./traefik/logs:/logs"
+      - "./traefik/config:/etc/traefik"
+    environment:
+      - TZ
+      - CLOUDFLARE_DNS_API_TOKEN
+      - PUID
+      - PGID
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    networks:
+      - traefik
+
+  traefik-manager:
+    image: ghcr.io/chr0nzz/traefik-manager:latest
+    container_name: traefik-manager
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges=true
+    ports:
+      - 5000:5000
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    environment:
+      - COOKIE_SECURE
+      - RESTART_METHOD
+      - TRAEFIK_CONTAINER
+      - STATIC_CONFIG_PATH
+      - ACME_JSON_PATH
+      - ACCESS_LOG_PATH
+    env_file:
+      - .env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Required
+      - ./traefik/config/dynamic.yml:/app/config/dynamic.yml
+      - ./manager/config:/app/config
+      - ./manager/backups:/app/backups
+      # Optional monitoring
+      - ./traefik/config/traefik.yml:/app/traefik.yml
+      - ./traefik/config/acme.json:/app/acme.json:ro
+      - ./traefik/logs/access.log:/app/logs/access.log:ro
+    networks:
+      - traefik
+
+  crowdsec:
+    image: docker.io/crowdsecurity/crowdsec:latest
+    container_name: crowdsec
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges=true
+    environment:
+      - GID
+      - COLLECTIONS
+      - CUSTOM_HOSTNAME
+      - TZ
+      - PUID
+      - PGID
+    env_file:
+      - .env
+    ports:
+      - 6060:6060
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    volumes:
+      - ./crowdsec/config:/etc/crowdsec
+      - ./crowdsec/database:/var/lib/crowdsec/data/
+      # - /var/lib/docker/volumes/ssh/_data/logs/openssh/:/var/log/opensshd/:ro
+      - ./traefik/logs:/var/log/traefik/:ro
+    healthcheck:
+      test: ["CMD", "cscli", "lapi", "status"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    networks:
+      - traefik
+
+  bouncer-traefik:
+    image: docker.io/fbonalair/traefik-crowdsec-bouncer:latest
+    container_name: crowdsec-bouncer-traefik
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges=true
+    environment:
+      - CROWDSEC_BOUNCER_API_KEY
+      - CROWDSEC_AGENT_HOST
+    env_file:
+      - .env
+    ports:
+      - 8922:8080
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    depends_on:
+      crowdsec:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "/healthchecker"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    networks:
+      - traefik
+
+  anubis:
+    image: ghcr.io/techarohq/anubis:main
+    container_name: anubis
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    security_opt:
+      - no-new-privileges=true
+    ports:
+      - 8923:8923
+      - 9191:9090
+    environment:
+      - BIND
+      - DIFFICULTY
+      - SERVE_ROBOTS_TXT
+      - TARGET
+      - POLICY_FNAME
+      - TZ
+      - REDIRECT_DOMAINS
+      - PUBLIC_URL
+      - COOKIE_DOMAIN
+      - JWT_RESTRICTION_HEADER
+      - USE_REMOTE_ADDRESS
+      - ED25519_PRIVATE_KEY_HEX
+    env_file:
+      - .env
+    volumes:
+      - ./anubis:/data
+    healthcheck:
+      test: ["CMD", "anubis", "--healthcheck"]
+      interval: 5s
+      timeout: 30s
+      retries: 5
+      start_period: 500ms
+    networks:
+      - traefik
+
+networks:
+  traefik:
+    name: traefik
+    enable_ipv6: true
