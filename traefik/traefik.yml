@@ -39,17 +39,26 @@ api:
 ping: {}
 
 log:
-  level: DEBUG
-  filePath: /logs/traefik.log
+  filePath: /etc/traefik/logs/traefik.log
+  level: INFO
+  format: json
 
-accesslog:
-  filePath: /logs/access.log
-  bufferingSize: 100
+accessLog:
+  filePath: /etc/traefik/logs/access.log
+  format: json
   filters:
     statusCodes:
-      - "204-299"
-      - "400-499"
+      - "200"
+      - "400-599"
       - "500-599"
+    retryAttempts: true
+    minDuration: "10ms"
+  bufferingSize: 0
+  fields:
+    headers:
+      defaultMode: drop
+      names:
+        User-Agent: keep
 
 providers:
   file:
@@ -60,7 +69,7 @@ certificatesResolvers:
   cloudflare:
     acme:
       email: henriquebuffon@gmail.com
-      storage: /etc/traefik/acme.json
+      storage: /etc/traefik/ssl/acme.json
       dnsChallenge:
         provider: cloudflare
         resolvers:

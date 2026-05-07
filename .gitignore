@@ -6,4 +6,5 @@ crowdsec/config/online_api_credentials.yaml
 crowdsec/config/notifications/discord.yaml
 manager/
 traefik/logs/
+traefik/ssl/
 .env

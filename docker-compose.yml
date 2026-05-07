@@ -23,9 +23,7 @@ services:
         limits:
           memory: 256M
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "./traefik/logs:/logs"
-      - "./traefik/config:/etc/traefik"
+      - "./traefik:/etc/traefik"
     environment:
       - TZ
       - CLOUDFLARE_DNS_API_TOKEN
@@ -65,12 +63,12 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       # Required
-      - ./traefik/config/dynamic.yml:/app/config/dynamic.yml
+      - ./traefik/dynamic.yml:/app/config/dynamic.yml
       - ./manager/config:/app/config
       - ./manager/backups:/app/backups
       # Optional monitoring
-      - ./traefik/config/traefik.yml:/app/traefik.yml
-      - ./traefik/config/acme.json:/app/acme.json:ro
+      - ./traefik/traefik.yml:/app/traefik.yml
+      - ./traefik/ssl/acme.json:/app/acme.json:ro
       - ./traefik/logs/access.log:/app/logs/access.log:ro
     networks:
       - traefik

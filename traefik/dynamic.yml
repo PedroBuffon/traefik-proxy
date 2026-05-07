@@ -1,18 +1,23 @@
 http:
   routers:
+    catchall-router:
+      rule: "HostRegexp(`{catchall:.*}`)"
+      priority: 1
+      entryPoints:
+        - http
+        - https
+      middlewares:
+        - crowdsec-bouncer
+      service: noop@internal
     Authentik:
       rule: Host(`auth.buffon.cloud`)
       entryPoints:
         - https
-      tls:
-        certResolver: cloudflare
       service: Authentik-service
     Bitmagnet:
       rule: Host(`magnet.buffon.cloud`)
       entryPoints:
         - https
-      tls:
-        certResolver: cloudflare
       service: Bitmagnet-service
       middlewares:
         - authentik
@@ -20,8 +25,6 @@ http:
       rule: Host(`sonarr.buffon.cloud`)
       entryPoints:
         - https
-      tls:
-        certResolver: cloudflare
       service: Sonarr-service
       middlewares:
         - authentik
@@ -29,15 +32,11 @@ http:
       rule: Host(`grafana.buffon.cloud`)
       entryPoints:
         - https
-      tls:
-        certResolver: cloudflare
       service: Grafana-service
     Radarr:
       rule: Host(`radarr.buffon.cloud`)
       entryPoints:
         - https
-      tls:
-        certResolver: cloudflare
       service: Radarr-service
       middlewares:
         - authentik
@@ -45,8 +44,6 @@ http:
       rule: Host(`tautulli.buffon.cloud`)
       entryPoints:
         - https
-      tls:
-        certResolver: cloudflare
       service: Tautulli-service
       middlewares:
         - authentik
@@ -54,15 +51,11 @@ http:
       rule: Host(`track.buffon.cloud`)
       entryPoints:
         - https
-      tls:
-        certResolver: cloudflare
       service: Yamtrack-service
     Prowlarr:
       rule: Host(`prowlarr.buffon.cloud`)
       entryPoints:
         - https
-      tls:
-        certResolver: cloudflare
       service: Prowlarr-service
       middlewares:
         - authentik
@@ -70,38 +63,28 @@ http:
       rule: Host(`shinkro.buffon.cloud`)
       entryPoints:
         - https
-      tls:
-        certResolver: cloudflare
       service: Shinkro-service
       middlewares:
-        - anubis@file
+        - anubis
     PVE:
       rule: Host(`pve.buffon.cloud`)
       entryPoints:
         - https
-      tls:
-        certResolver: cloudflare
       service: PVE-service
     NginxProxyManager:
       rule: Host(`nginx.buffon.cloud`)
       entryPoints:
         - https
-      tls:
-        certResolver: cloudflare
       service: NginxProxyManager-service
     Portainer:
       rule: Host(`portainer.buffon.cloud`)
       entryPoints:
         - https
-      tls:
-        certResolver: cloudflare
       service: Portainer-service
     Pi-Hole:
       rule: Host(`pihole.buffon.cloud`)
       entryPoints:
         - https
-      tls:
-        certResolver: cloudflare
       service: Pi-Hole-service
       middlewares:
         - authentik
@@ -109,8 +92,6 @@ http:
       rule: Host(`piholebk.buffon.cloud`)
       entryPoints:
         - https
-      tls:
-        certResolver: cloudflare
       service: Pi-Hole Backup-service
       middlewares:
         - authentik
@@ -118,29 +99,21 @@ http:
       rule: Host(`pvenuc.buffon.cloud`)
       entryPoints:
         - https
-      tls:
-        certResolver: cloudflare
       service: PVE Nuc-service
     Nextcloud:
       rule: Host(`next.buffon.cloud`)
       entryPoints:
         - https
-      tls:
-        certResolver: cloudflare
       service: Nextcloud-service
     N8N:
       rule: Host(`n8n.buffon.cloud`)
       entryPoints:
         - https
-      tls:
-        certResolver: cloudflare
       service: N8N-service
     Notifiarr:
       rule: Host(`notifiarr.buffon.cloud`)
       entryPoints:
         - https
-      tls:
-        certResolver: cloudflare
       service: Notifiarr-service
       middlewares:
         - authentik
@@ -148,22 +121,16 @@ http:
       rule: Host(`pbs.buffon.cloud`)
       entryPoints:
         - https
-      tls:
-        certResolver: cloudflare
       service: PBS-service
     Speedtest:
       rule: Host(`speedtest.buffon.cloud`)
       entryPoints:
         - https
-      tls:
-        certResolver: cloudflare
       service: Speedtest-service
     qBittorrent:
       rule: Host(`torrent.buffon.cloud`)
       entryPoints:
         - https
-      tls:
-        certResolver: cloudflare
       service: qBittorrent-service
       middlewares:
         - authentik
@@ -171,15 +138,11 @@ http:
       rule: Host(`vault.buffon.cloud`)
       entryPoints:
         - https
-      tls:
-        certResolver: cloudflare
       service: Vaultwarden-service
     Uptime-Kuma:
       rule: Host(`uptime.buffon.cloud`)
       entryPoints:
         - https
-      tls:
-        certResolver: cloudflare
       service: Uptime-Kuma-service
       middlewares:
         - authentik
@@ -187,29 +150,23 @@ http:
       rule: Host(`git.buffon.cloud`)
       entryPoints:
         - https
-      tls:
-        certResolver: cloudflare
       service: Gitea-service
     searXNG:
       rule: Host(`buffon.cloud`) || Host(`www.buffon.cloud`)
       entryPoints:
         - https
-      tls:
-        certResolver: cloudflare
       service: searXNG-service
+      middlewares:
+        - anubis
     Plex:
       rule: Host(`plex.buffon.cloud`)
       entryPoints:
         - https
-      tls:
-        certResolver: cloudflare
       service: Plex-service
     Traefik-Manager:
       rule: Host(`manager.buffon.cloud`)
       entryPoints:
         - https
-      tls:
-        certResolver: cloudflare
       service: Traefik-Manager-service
       middlewares:
         - authentik
@@ -218,28 +175,20 @@ http:
         - https
       rule: "Host(`mail.buffon.cloud`)"
       service: mailcow-service
-      tls:
-        certResolver: cloudflare
     mailcow-autoconfig:
       entryPoints:
         - https
       rule: "(Host(`autoconfig.buffon.cloud`) && Path(`/mail/config-v1.1.xml`))"
       service: mailcow-service
-      tls:
-        certResolver: cloudflare
     mailcow-autodiscover:
       entryPoints:
         - https
       rule: "(Host(`autodiscover.buffon.cloud`) && Path(`/autodiscover/autodiscover.xml`))"
       service: mailcow-service
-      tls:
-        certResolver: cloudflare
     Anubis:
       rule: Host(`anubis.buffon.cloud`)
       entryPoints:
         - https
-      tls:
-        certResolver: cloudflare
       service: Anubis-service
   services:
     Authentik-service:
@@ -399,3 +348,11 @@ http:
         authResponseHeaders:
           - X-Forwarded-User
           - X-Forwarded-Email
+
+tls:
+  stores:
+    default:
+      defaultGeneratedCert:
+        resolver: cloudflare
+        domain:
+          main: buffon.cloud
