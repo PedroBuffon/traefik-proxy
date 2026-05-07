@@ -37,41 +37,9 @@ services:
       timeout: 5s
       retries: 3
     networks:
-      - traefik
-
-  traefik-manager:
-    image: ghcr.io/chr0nzz/traefik-manager:latest
-    container_name: traefik-manager
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges=true
-    ports:
-      - 5000:5000
-    deploy:
-      resources:
-        limits:
-          memory: 256M
-    environment:
-      - COOKIE_SECURE
-      - RESTART_METHOD
-      - TRAEFIK_CONTAINER
-      - STATIC_CONFIG_PATH
-      - ACME_JSON_PATH
-      - ACCESS_LOG_PATH
-    env_file:
-      - .env
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      # Required
-      - ./traefik/dynamic.yml:/app/config/dynamic.yml
-      - ./manager/config:/app/config
-      - ./manager/backups:/app/backups
-      # Optional monitoring
-      - ./traefik/traefik.yml:/app/traefik.yml
-      - ./traefik/ssl/acme.json:/app/acme.json:ro
-      - ./traefik/logs/access.log:/app/logs/access.log:ro
-    networks:
-      - traefik
+      traefik:
+        ipv6_address: "2001:db8:2::2"
+        ipv4_address: "172.21.0.2"
 
   crowdsec:
     image: docker.io/crowdsecurity/crowdsec:latest
@@ -106,7 +74,9 @@ services:
       retries: 3
       start_period: 30s
     networks:
-      - traefik
+      traefik:
+        ipv6_address: "2001:db8:2::3"
+        ipv4_address: "172.21.0.3"
 
   anubis:
     image: ghcr.io/techarohq/anubis:main
@@ -144,7 +114,45 @@ services:
       retries: 5
       start_period: 500ms
     networks:
-      - traefik
+      traefik:
+        ipv6_address: "2001:db8:2::4"
+        ipv4_address: "172.21.0.4"
+
+  traefik-manager:
+    image: ghcr.io/chr0nzz/traefik-manager:latest
+    container_name: traefik-manager
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges=true
+    ports:
+      - 5000:5000
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    environment:
+      - COOKIE_SECURE
+      - RESTART_METHOD
+      - TRAEFIK_CONTAINER
+      - STATIC_CONFIG_PATH
+      - ACME_JSON_PATH
+      - ACCESS_LOG_PATH
+    env_file:
+      - .env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Required
+      - ./traefik/dynamic.yml:/app/config/dynamic.yml
+      - ./manager/config:/app/config
+      - ./manager/backups:/app/backups
+      # Optional monitoring
+      - ./traefik/traefik.yml:/app/traefik.yml
+      - ./traefik/ssl/acme.json:/app/acme.json:ro
+      - ./traefik/logs/access.log:/app/logs/access.log:ro
+    networks:
+      traefik:
+        ipv6_address: "2001:db8:2::5"
+        ipv4_address: "172.21.0.5"
 
 networks:
   traefik:
@@ -152,4 +160,8 @@ networks:
     enable_ipv6: true
     ipam:
       config:
+        - subnet: "172.21.0.0/16" # Change according to your needs
         - subnet: "2001:db8:2::/64"
+
+# Static ips on containers only for if you use the app.crowdsec.net, if you don't use the networks,
+# the remediation components will have duplicated bouncers, each time you restart the container will get a new ip

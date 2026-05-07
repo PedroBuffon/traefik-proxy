@@ -4,4 +4,5 @@ crowdsec/
 manager/
 traefik/logs/
 traefik/ssl/
+traefik/plugins-storage/
 .env
