@@ -108,35 +108,6 @@ services:
     networks:
       - traefik
 
-  bouncer-traefik:
-    image: docker.io/fbonalair/traefik-crowdsec-bouncer:latest
-    container_name: crowdsec-bouncer-traefik
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges=true
-    environment:
-      - CROWDSEC_BOUNCER_API_KEY
-      - CROWDSEC_AGENT_HOST
-    env_file:
-      - .env
-    ports:
-      - 8922:8080
-    deploy:
-      resources:
-        limits:
-          memory: 256M
-    depends_on:
-      crowdsec:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "/healthchecker"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 30s
-    networks:
-      - traefik
-
   anubis:
     image: ghcr.io/techarohq/anubis:main
     container_name: anubis
@@ -148,7 +119,6 @@ services:
     security_opt:
       - no-new-privileges=true
     ports:
-      - 8923:8923
       - 9191:9090
     environment:
       - BIND
@@ -180,3 +150,6 @@ networks:
   traefik:
     name: traefik
     enable_ipv6: true
+    ipam:
+      config:
+        - subnet: "2001:db8:2::/64"

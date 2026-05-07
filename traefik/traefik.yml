@@ -18,7 +18,7 @@ entryPoints:
     address: "[::]:80"
     http:
       middlewares:
-        - crowdsec-bouncer@file
+        - crowdsec@file
       redirections:
         entryPoint:
           to: https
@@ -28,7 +28,7 @@ entryPoints:
     address: "[::]:443"
     http:
       middlewares:
-        - crowdsec-bouncer@file
+        - crowdsec@file
       tls:
         certResolver: cloudflare
 
@@ -75,3 +75,9 @@ certificatesResolvers:
         resolvers:
           - "1.1.1.1:53"
           - "1.0.0.1:53"
+
+experimental:
+  plugins:
+    crowdsec:
+      moduleName: github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin
+      version: v1.6.0

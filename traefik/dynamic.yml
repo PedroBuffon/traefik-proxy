@@ -312,10 +312,17 @@ http:
         servers:
           - url: http://10.84.181.2:8923
   middlewares:
-    crowdsec-bouncer:
-      forwardAuth:
-        address: http://10.84.181.2:8922/api/v1/forwardAuth
-        trustForwardHeader: true
+    crowdsec:
+      plugin:
+        crowdsec:
+          enabled: true
+          logLevel: DEBUG
+          LogFilePath: "/etc/traefik/logs/bouncer.log"
+          crowdsecMode: live
+          crowdsecLapiKey: "{{ env "CROWDSEC_BOUNCER_API_KEY" }}"
+          crowdsecLapiHost: crowdsec:8080
+          metricsUpdateIntervalSeconds: 600
+          banHTMLFilePath: /etc/traefik/html/ban.html
     authentik:
       forwardAuth:
         address: http://10.84.181.243:9000/outpost.goauthentik.io/auth/traefik
@@ -338,7 +345,7 @@ http:
           # - authorization
     anubis:
       forwardAuth:
-        address: http://10.84.181.2:8923/.within.website/x/cmd/anubis/api/check
+        address: http://anubis:8923/.within.website/x/cmd/anubis/api/check
         trustForwardHeader: true
         authRequestHeaders:
           - X-Forwarded-Proto
@@ -356,3 +363,12 @@ tls:
         resolver: cloudflare
         domain:
           main: buffon.cloud
+          sans:
+            - "*.buffon.cloud"
+  options:
+    tls-options:
+      minVersion: VersionTLS12
+      cipherSuites:
+        - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305
