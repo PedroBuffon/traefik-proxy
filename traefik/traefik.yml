@@ -46,19 +46,19 @@ log:
 accessLog:
   filePath: /etc/traefik/logs/access.log
   format: json
-  filters:
-    statusCodes:
-      - "200"
-      - "400-599"
-      - "500-599"
-    retryAttempts: true
-    minDuration: "10ms"
-  bufferingSize: 0
-  fields:
-    headers:
-      defaultMode: drop
-      names:
-        User-Agent: keep
+  # filters:
+  #   statusCodes:
+  #     - "200"
+  #     - "400-599"
+  #     - "500-599"
+  #   retryAttempts: true
+  #   minDuration: "10ms"
+  # bufferingSize: 0
+  # fields:
+  #   headers:
+  #     defaultMode: drop
+  #     names:
+  #       User-Agent: keep
 
 providers:
   file:

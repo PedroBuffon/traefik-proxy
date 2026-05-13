@@ -6,8 +6,6 @@ http:
       entryPoints:
         - http
         - https
-      middlewares:
-        - crowdsec-bouncer
       service: noop@internal
     Authentik:
       rule: Host(`auth.buffon.cloud`)
@@ -170,6 +168,11 @@ http:
       service: Traefik-Manager-service
       middlewares:
         - authentik
+    Mikrotik:
+      rule: Host(`mikrotik.buffon.cloud`)
+      entryPoints:
+        - https
+      service: Mikrotik-service
     mailcow:
       entryPoints:
         - https
@@ -303,6 +306,10 @@ http:
       loadBalancer:
         servers:
           - url: http://10.84.181.2:5000
+    Mikrotik-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.1:8888
     mailcow-service:
       loadBalancer:
         servers:
@@ -316,17 +323,27 @@ http:
       plugin:
         crowdsec:
           enabled: true
-          logLevel: DEBUG
+          logLevel: INFO
           LogFilePath: "/etc/traefik/logs/bouncer.log"
           crowdsecMode: live
+          crowdsecLapiScheme: http
           crowdsecLapiKey: "{{ env "CROWDSEC_BOUNCER_API_KEY" }}"
           crowdsecLapiHost: crowdsec:8080
           metricsUpdateIntervalSeconds: 600
+          captchaProvider: turnstile
+          captchaSiteKey: "{{ env "CAPTCHA_SITE_KEY" }}"
+          captchaSecretKey: "{{ env "CAPTCHA_SECRET_KEY" }}"
+          captchaGracePeriodSeconds: 1800
+          captchaHTMLFilePath: /etc/traefik/html/captcha.html
           banHTMLFilePath: /etc/traefik/html/ban.html
+          redisCacheEnabled: false
+          redisCacheHost: redis:6379
+          redisCacheUnreachableBlock: true
     authentik:
       forwardAuth:
         address: http://10.84.181.243:9000/outpost.goauthentik.io/auth/traefik
         trustForwardHeader: true
+        maxResponseBodySize: 1048576 # 1MB
         authResponseHeaders:
           - X-authentik-username
           - X-authentik-groups
@@ -347,6 +364,7 @@ http:
       forwardAuth:
         address: http://anubis:8923/.within.website/x/cmd/anubis/api/check
         trustForwardHeader: true
+        maxResponseBodySize: 1048576 # 1MB
         authRequestHeaders:
           - X-Forwarded-Proto
           - X-Forwarded-Host
@@ -368,7 +386,8 @@ tls:
   options:
     tls-options:
       minVersion: VersionTLS12
+      maxVersion: VersionTLS13
       cipherSuites:
+        - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
         - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
-        - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305
+        - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
