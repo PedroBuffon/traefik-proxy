@@ -6,3 +6,5 @@ traefik/logs/
 traefik/ssl/
 traefik/plugins-storage/
 .env
+routeros/config.yaml
+routeros/cs-routeros-bouncer.log
