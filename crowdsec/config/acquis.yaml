@@ -1,5 +1,0 @@
-{
-  "source": "file",
-  "filename": "/var/log/traefik/*",
-  "labels": { "type": "traefik" },
-}
