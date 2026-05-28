@@ -1,9 +1,6 @@
 global:
   checkNewVersion: true
-  sendAnonymousUsage: false
-
-serversTransport:
-  insecureSkipVerify: true
+  sendAnonymousUsage: true
 
 metrics:
   prometheus:
@@ -14,10 +11,23 @@ metrics:
       - 5.0
 
 entryPoints:
+  traefik:
+    address: "[::]:8080"
+
   http:
     address: "[::]:80"
+    forwardedHeaders:
+      trustedIPs:
+        - "127.0.0.1/32"
+        - "10.0.0.0/8"
+        - "172.16.0.0/12"
+        - "192.168.0.0/16"
+        - "::1/128"
+        - "fc00::/7"
     http:
       middlewares:
+        - security-headers@file
+        # - geoblock@file
         - crowdsec@file
       redirections:
         entryPoint:
@@ -26,17 +36,37 @@ entryPoints:
 
   https:
     address: "[::]:443"
+    forwardedHeaders:
+      trustedIPs:
+        - "127.0.0.1/32"
+        - "10.0.0.0/8"
+        - "172.16.0.0/12"
+        - "192.168.0.0/16"
+        - "::1/128"
+        - "fc00::/7"
     http:
       middlewares:
+        - security-headers@file
+        # - geoblock@file
         - crowdsec@file
       tls:
         certResolver: cloudflare
+
+  ssh:
+    address: "[::]:2222"
+
+  rdp:
+    address: "[::]:3389"
+
+  rdp-udp:
+    address: "[::]:3389/udp"
 
 api:
   dashboard: true
   insecure: true
 
-ping: {}
+ping:
+  entryPoint: traefik
 
 log:
   filePath: /etc/traefik/logs/traefik.log
@@ -62,7 +92,7 @@ accessLog:
 
 providers:
   file:
-    filename: /etc/traefik/dynamic.yml
+    directory: /etc/traefik/config
     watch: true
 
 certificatesResolvers:
@@ -81,3 +111,7 @@ experimental:
     crowdsec:
       moduleName: github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin
       version: v1.6.0
+
+    geoblock:
+      moduleName: github.com/PascalMinder/geoblock
+      version: v0.3.7

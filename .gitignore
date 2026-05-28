@@ -4,7 +4,8 @@ crowdsec/
 manager/
 traefik/logs/
 traefik/ssl/
+traefik/geoblock/
 traefik/plugins-storage/
 .env
 routeros/config.yaml
-routeros/cs-routeros-bouncer.log
+routeros/logs

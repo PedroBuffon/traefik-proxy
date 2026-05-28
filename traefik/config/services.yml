@@ -1,0 +1,141 @@
+http:
+  services:
+    Bitmagnet-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.252:3333
+
+    Sonarr-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.252:8989
+
+    Radarr-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.252:7878
+
+    Tautulli-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.252:8181
+
+    Prowlarr-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.252:9696
+
+    Pi-Hole-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.245:80
+
+    Pi-Hole_Backup-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.242:80
+
+    Notifiarr-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.252:5454
+
+    qBittorrent-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.252:2081
+
+    Authentik-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.243:9000
+
+    Grafana-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.240:3000
+
+    Yamtrack-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.2:8001
+
+    Shinkro-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.2:7011
+
+    PVE-service:
+      loadBalancer:
+        serversTransport: insecure
+        servers:
+          - url: https://10.84.181.254:8006
+
+    Portainer-service:
+      loadBalancer:
+        serversTransport: insecure
+        servers:
+          - url: https://10.84.181.2:9443
+
+    PVE Nuc-service:
+      loadBalancer:
+        serversTransport: insecure
+        servers:
+          - url: https://10.84.181.253:8006
+
+    Nextcloud-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.248:11000
+
+    N8N-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.244:5678
+
+    PBS-service:
+      loadBalancer:
+        serversTransport: insecure
+        servers:
+          - url: https://10.84.181.230:8007
+
+    Speedtest-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.2:10808
+
+    Vaultwarden-service:
+      loadBalancer:
+        serversTransport: insecure
+        servers:
+          - url: https://10.84.181.247:8000
+
+    Gitea-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.249:3000
+
+    searXNG-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.241:8888
+
+    Plex-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.5:32400
+
+    Traefik-Manager-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.2:5000
+
+    Mikrotik-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.1:8888
+
+    Anubis-service:
+      loadBalancer:
+        servers:
+          - url: http://anubis:8923

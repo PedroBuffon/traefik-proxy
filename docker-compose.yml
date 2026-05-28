@@ -3,27 +3,28 @@ services:
     image: traefik:latest
     container_name: traefik
     restart: unless-stopped
+    depends_on:
+      crowdsec:
+        condition: service_healthy
     security_opt:
       - no-new-privileges=true
     ports:
-      - target: 80
-        published: 80
-        protocol: tcp
-        mode: host
-      - target: 443
-        published: 443
-        protocol: tcp
-        mode: host
-      - target: 8080
-        published: 8080
-        protocol: tcp
-        mode: host
+      - "80:80"
+      - "443:443"
+
+      - "8080:8080"
+      - "2222:2222"
+
+      # RDP
+      - "3389:3389/tcp"
+      - "3389:3389/udp"
     deploy:
       resources:
         limits:
           memory: 256M
     volumes:
       - "./traefik:/etc/traefik"
+      - "./traefik/plugins-storage:/plugins-storage"
     environment:
       - TZ
       - CF_DNS_API_TOKEN
@@ -56,6 +57,8 @@ services:
       - PGID
     env_file:
       - .env
+    expose:
+      - 8080
     ports:
       - 6060:6060
     deploy:
@@ -82,11 +85,14 @@ services:
     image: ghcr.io/jmrplens/cs-routeros-bouncer:latest
     container_name: cs-routeros-bouncer
     restart: unless-stopped
+    depends_on:
+      crowdsec:
+        condition: service_healthy
     ports:
       - "2112:2112" # Prometheus metrics (optional)
     volumes:
       - ./routeros/config.yaml:/etc/cs-routeros-bouncer/config.yaml
-      - ./routeros/logs/cs-routeros-bouncer.log:/var/log/cs-routeros-bouncer.log
+      - ./routeros/logs:/var/log
     networks:
       traefik:
         ipv6_address: "2001:db8:2::7"
@@ -96,14 +102,18 @@ services:
     image: ghcr.io/techarohq/anubis:main
     container_name: anubis
     restart: unless-stopped
+    depends_on:
+      crowdsec:
+        condition: service_healthy
     deploy:
       resources:
         limits:
           memory: 256M
     security_opt:
       - no-new-privileges=true
+    expose:
+      - 8923
     ports:
-      - 8923:8923
       - 9191:9090
     environment:
       - BIND
@@ -133,57 +143,57 @@ services:
         ipv6_address: "2001:db8:2::4"
         ipv4_address: "172.21.0.4"
 
-  # redis:
-  #   image: redis:7-alpine
-  #   container_name: traefik-redis
-  #   restart: unless-stopped
-  #   healthcheck:
-  #     test: ["CMD", "redis-cli", "--ping"]
-  #     interval: 30s
-  #     timeout: 5s
-  #     retries: 3
-  #   volumes:
-  #     - traefik_redis:/data
-  #   networks:
-  #     traefik:
-  #       ipv6_address: "2001:db8:2::6"
-  #       ipv4_address: "172.21.0.6"
+# redis:
+#   image: redis:7-alpine
+#   container_name: traefik-redis
+#   restart: unless-stopped
+#   healthcheck:
+#     test: ["CMD", "redis-cli", "--ping"]
+#     interval: 30s
+#     timeout: 5s
+#     retries: 3
+#   volumes:
+#     - traefik_redis:/data
+#   networks:
+#     traefik:
+#       ipv6_address: "2001:db8:2::6"
+#       ipv4_address: "172.21.0.6"
 
-  # traefik-manager:
-  #   image: ghcr.io/chr0nzz/traefik-manager:latest
-  #   container_name: traefik-manager
-  #   restart: unless-stopped
-  #   security_opt:
-  #     - no-new-privileges=true
-  #   ports:
-  #     - 5000:5000
-  #   deploy:
-  #     resources:
-  #       limits:
-  #         memory: 256M
-  #   environment:
-  #     - COOKIE_SECURE
-  #     - RESTART_METHOD
-  #     - TRAEFIK_CONTAINER
-  #     - STATIC_CONFIG_PATH
-  #     - ACME_JSON_PATH
-  #     - ACCESS_LOG_PATH
-  #   env_file:
-  #     - .env
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock
-  #     # Required
-  #     - ./traefik/dynamic.yml:/app/config/dynamic.yml
-  #     - ./manager/config:/app/config
-  #     - ./manager/backups:/app/backups
-  #     # Optional monitoring
-  #     - ./traefik/traefik.yml:/app/traefik.yml
-  #     - ./traefik/ssl/acme.json:/app/acme.json:ro
-  #     - ./traefik/logs/access.log:/app/logs/access.log:ro
-  #   networks:
-  #     traefik:
-  #       ipv6_address: "2001:db8:2::5"
-  #       ipv4_address: "172.21.0.5"
+#  traefik-manager:
+#    image: ghcr.io/chr0nzz/traefik-manager:latest
+#    container_name: traefik-manager
+#    restart: unless-stopped
+#    security_opt:
+#      - no-new-privileges=true
+#    ports:
+#      - 5000:5000
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 256M
+#    environment:
+#      - COOKIE_SECURE
+#      - RESTART_METHOD
+#      - TRAEFIK_CONTAINER
+#      - STATIC_CONFIG_PATH
+#      - ACME_JSON_PATH
+#      - ACCESS_LOG_PATH
+#    env_file:
+#      - .env
+#    volumes:
+#      - /var/run/docker.sock:/var/run/docker.sock
+#      # Required
+#      - ./traefik/dynamic.yml:/app/config/dynamic.yml
+#      - ./manager/config:/app/config
+#      - ./manager/backups:/app/backups
+#      # Optional monitoring
+#      - ./traefik/traefik.yml:/app/traefik.yml
+#      - ./traefik/ssl/acme.json:/app/acme.json:ro
+#      - ./traefik/logs/access.log:/app/logs/access.log:ro
+#    networks:
+#      traefik:
+#        ipv6_address: "2001:db8:2::5"
+#        ipv4_address: "172.21.0.5"
 
 volumes:
   traefik_redis:

@@ -1,0 +1,12 @@
+udp:
+  routers:
+    remote-rdp-udp:
+      entryPoints:
+        - rdp-udp
+      service: remote-rdp-udp-service
+
+  services:
+    remote-rdp-udp-service:
+      loadBalancer:
+        servers:
+          - address: "10.84.181.5:3389"
