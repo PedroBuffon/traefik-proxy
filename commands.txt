@@ -1,0 +1,14 @@
+crowdsec bouncers list
+crowdsec bouncers add bouncer-traefik
+crowdsec bouncers add cs-routeros-bouncer
+
+crowdsec allowlists list
+crowdsec allowlists create home -d "Home"
+crowdsec allowlists add home 10.84.181.0/24
+crowdsec allowlists add home 192.168.2.0/24
+crowdsec allowlists add home 177.66.30.74
+crowdsec allowlists add home 2804:10fc:200:e100::/56
+crowdsec allowlists create Custom -d "AllowedIPs"
+crowdsec allowlists add Custom 200.185.222.226
+
+crowdsec metrics

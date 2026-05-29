@@ -27,8 +27,8 @@ entryPoints:
     http:
       middlewares:
         - security-headers@file
-        # - geoblock@file
         - crowdsec@file
+        - geoblock@file
       redirections:
         entryPoint:
           to: https
@@ -47,8 +47,8 @@ entryPoints:
     http:
       middlewares:
         - security-headers@file
-        # - geoblock@file
         - crowdsec@file
+        - geoblock@file
       tls:
         certResolver: cloudflare
 
