@@ -162,10 +162,10 @@ services:
     security_opt:
       - no-new-privileges=true
     volumes:
-      - ./anubis/logs:/logs
-      - ./crowdsec/logs:/logs
-      - ./traefik/logs:/logs
-      - ./routeros/logs:/logs
+      - ./anubis/logs:/logs/anubis
+      - ./crowdsec/logs:/logs/crowdsec
+      - ./traefik/logs:/logs/traefik
+      - ./routeros/logs:/logs/routeros
     env_file:
       - .env
     networks:
