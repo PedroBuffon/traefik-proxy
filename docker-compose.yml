@@ -148,6 +148,31 @@ services:
         ipv6_address: "2001:db8:2::4"
         ipv4_address: "172.21.0.4"
 
+  logrotate:
+    image: samuelrunggaldier/logrotate:latest
+    container_name: logrotate
+    restart: unless-stopped
+    depends_on:
+      crowdsec:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    security_opt:
+      - no-new-privileges=true
+    volumes:
+      - ./anubis/logs:/logs
+      - ./crowdsec/logs:/logs
+      - ./traefik/logs:/logs
+      - ./routeros/logs:/logs
+    env_file:
+      - .env
+    networks:
+      traefik:
+        ipv6_address: "2001:db8:2::8"
+        ipv4_address: "172.21.0.8"
+
 # redis:
 #   image: redis:7-alpine
 #   container_name: traefik-redis

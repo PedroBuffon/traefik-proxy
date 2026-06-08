@@ -47,7 +47,7 @@ bots:
   #   user_agent_regex: (?i:bot|crawler)
   #   action: CHALLENGE
   #   challenge:
-  #     difficulty: 16  # impossible
+  #     difficulty: 16 # impossible
   #     algorithm: slow # intentionally waste CPU cycles and time
 
   # ## System load based checks.
@@ -136,22 +136,44 @@ openGraph:
 # or a denial. This seems weird, but this is load-bearing due to the fact that
 # the most aggressive scraper bots seem to really, really, want an HTTP 200 and
 # will stop sending requests once they get it.
-#status_codes:
-#  CHALLENGE: 200
-#  DENY: 200
-
 status_codes:
-  CHALLENGE: 403
-  DENY: 403
+  CHALLENGE: 200
+  DENY: 200
+
+# # Configuration for the metrics server. See the docs for more information:
+# #
+# # https://anubis.techaro.lol/docs/admin/policies#metrics-server
+# #
+# # This is commented out by default so that command line flags take precedence.
+metrics:
+  bind: ":9090"
+  network: "tcp"
+#
+# # To protect your metrics server with basic auth, set credentials below:
+# #
+# # https://anubis.techaro.lol/docs/admin/policies#http-basic-authentication
+#   basicAuth:
+#     username: ""
+#     password: ""
+#
+# # To serve metrics over TLS, set the path to the right TLS certificate and key
+# # here. When the files change on disk, they will automatically be reloaded.
+# #
+# # https://anubis.techaro.lol/docs/admin/policies#tls
+#   tls:
+#     certificate: /path/to/tls.crt
+#     key: /path/to/tls.key
+#
+#     # If you want to secure your metrics endpoint using mutual TLS (mTLS), set
+#     # the path to a certificate authority public certificate here.
+#     #
+#     # https://anubis.techaro.lol/docs/admin/policies#mtls
+#     ca: /path/to/ca.crt
 
 # Anubis can store temporary data in one of a few backends. See the storage
 # backends section of the docs for more information:
 #
 # https://anubis.techaro.lol/docs/admin/policies#storage-backends
-#store:
-#  backend: memory
-#  parameters: {}
-
 store:
   backend: bbolt
   parameters:
@@ -196,13 +218,9 @@ thresholds:
         - weight < 20
     action: CHALLENGE
     challenge:
-      # https://anubis.techaro.lol/docs/admin/configuration/challenges/preact
-      #
-      # This challenge proves the client can run a webapp written with Preact.
-      # The preact webapp simply loads, calculates the SHA-256 checksum of the
-      # challenge data, and forwards that to the client.
-      algorithm: preact
-      difficulty: 1
+      # https://anubis.techaro.lol/docs/admin/configuration/challenges/proof-of-work
+      algorithm: fast
+      difficulty: 2 # two leading zeros, very fast for most clients
   - name: mild-proof-of-work
     expression:
       all:
@@ -212,7 +230,7 @@ thresholds:
     challenge:
       # https://anubis.techaro.lol/docs/admin/configuration/challenges/proof-of-work
       algorithm: fast
-      difficulty: 2 # two leading zeros, very fast for most clients
+      difficulty: 4
   # For clients that are browser like and have gained many points from custom rules
   - name: extreme-suspicion
     expression: weight >= 30
@@ -220,17 +238,13 @@ thresholds:
     challenge:
       # https://anubis.techaro.lol/docs/admin/configuration/challenges/proof-of-work
       algorithm: fast
-      difficulty: 4
-
-metrics:
-  bind: ":9090"
-  network: "tcp"
+      difficulty: 6
 
 logging:
   sink: file
   level: "INFO+1"
   parameters:
-    file: "./data/logs/anubis.log"
+    file: "/data/logs/anubis.log"
     maxBackups: 3 # keep at least 3 old copies
     maxBytes: 67108864 # each file can have up to 64 Mi of logs
     maxAge: 7 # rotate files out every n days

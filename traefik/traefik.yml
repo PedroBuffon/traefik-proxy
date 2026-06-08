@@ -26,9 +26,8 @@ entryPoints:
         - "fc00::/7"
     http:
       middlewares:
-        - security-headers@file
-        - crowdsec@file
         - geoblock@file
+        - crowdsec@file
       redirections:
         entryPoint:
           to: https
@@ -46,11 +45,9 @@ entryPoints:
         - "fc00::/7"
     http:
       middlewares:
-        - security-headers@file
+        - anubis@file
         - crowdsec@file
         - geoblock@file
-      tls:
-        certResolver: cloudflare
 
   ssh:
     address: "[::]:2222"

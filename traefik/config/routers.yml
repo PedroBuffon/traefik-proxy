@@ -210,6 +210,7 @@ http:
       tls:
         certResolver: cloudflare
       middlewares:
+        - security-headers
         - strict-csp
 
     Plex:
@@ -235,5 +236,3 @@ http:
       service: Anubis-service
       tls:
         certResolver: cloudflare
-      # middlewares:
-      #   - anubis
