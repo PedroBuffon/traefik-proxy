@@ -73,6 +73,30 @@ log:
 accessLog:
   filePath: /etc/traefik/logs/access.log
   format: json
+  filters:
+    # statusCodes:
+    #   - "200"
+    #   - "300-302"
+    # retryAttempts: true
+    # minDuration: "10ms"
+  fields:
+    # Keep all the fields by default
+    defaultMode: keep
+    names:
+      # Drop the Field ClientUserName
+      ClientUsername: drop
+    headers:
+      # Keep all the headers by default
+      defaultMode: keep
+      names:
+        # Redact the User-Agent header value
+        User-Agent: redact
+        # Drop the Authorization header value
+        Authorization: drop
+    queryParameters:
+      # Drop all query parameters
+      defaultMode: drop
+
   # filters:
   #   statusCodes:
   #     - "200"
@@ -91,6 +115,11 @@ providers:
   file:
     directory: /etc/traefik/config
     watch: true
+
+  # redis:
+  #   endpoints:
+  #     - "traefik-redis:6379"
+  #   rootKey: "traefik"
 
 certificatesResolvers:
   cloudflare:
@@ -112,3 +141,7 @@ experimental:
     geoblock:
       moduleName: github.com/PascalMinder/geoblock
       version: v0.3.7
+
+    themepark:
+        moduleName: "github.com/packruler/traefik-themepark"
+        version: "v1.4.2"

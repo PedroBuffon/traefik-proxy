@@ -1,0 +1,27 @@
+http:
+  middlewares:
+    sonarr:
+      plugin:
+        themepark:
+          app: sonarr
+          theme: '{{ env "theme" }}'
+    radarr:
+      plugin:
+        themepark:
+          app: radarr
+          theme: '{{ env "theme" }}'
+    qbittorrent:
+      plugin:
+        themepark:
+          app: qbittorrent
+          theme: '{{ env "theme" }}'
+    prowlarr:
+      plugin:
+        themepark:
+          app: prowlarr
+          theme: '{{ env "theme" }}'
+    tautulli:
+      plugin:
+        themepark:
+          app: tautulli
+          theme: '{{ env "theme" }}'

@@ -35,6 +35,7 @@ http:
         certResolver: cloudflare
       middlewares:
         - authentik
+        - sonarr
 
     Radarr:
       rule: Host(`radarr.buffon.cloud`)
@@ -45,6 +46,7 @@ http:
         certResolver: cloudflare
       middlewares:
         - authentik
+        - radarr
 
     Tautulli:
       rule: Host(`tautulli.buffon.cloud`)
@@ -55,6 +57,7 @@ http:
         certResolver: cloudflare
       middlewares:
         - authentik
+        - tautulli
 
     Prowlarr:
       rule: Host(`prowlarr.buffon.cloud`)
@@ -65,6 +68,7 @@ http:
         certResolver: cloudflare
       middlewares:
         - authentik
+        - prowlarr
 
     Pi-Hole:
       rule: Host(`pihole.buffon.cloud`)
@@ -105,6 +109,7 @@ http:
         certResolver: cloudflare
       middlewares:
         - authentik
+        - qbittorrent
 
     Authentik:
       rule: Host(`auth.buffon.cloud`)

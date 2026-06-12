@@ -97,6 +97,12 @@ services:
     volumes:
       - ./routeros/config.yaml:/etc/cs-routeros-bouncer/config.yaml
       - ./routeros/logs:/var/log
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:2112/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
     networks:
       traefik:
         ipv6_address: "2001:db8:2::7"
@@ -173,21 +179,35 @@ services:
         ipv6_address: "2001:db8:2::8"
         ipv4_address: "172.21.0.8"
 
-# redis:
-#   image: redis:7-alpine
-#   container_name: traefik-redis
-#   restart: unless-stopped
-#   healthcheck:
-#     test: ["CMD", "redis-cli", "--ping"]
-#     interval: 30s
-#     timeout: 5s
-#     retries: 3
-#   volumes:
-#     - traefik_redis:/data
-#   networks:
-#     traefik:
-#       ipv6_address: "2001:db8:2::6"
-#       ipv4_address: "172.21.0.6"
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: traefik-redis
+  #   restart: unless-stopped
+  #   command:
+  #     - redis-server
+  #     - --appendonly
+  #     - yes
+  #     - --notify-keyspace-events
+  #     - KEA
+  #   healthcheck:
+  #     test: ["CMD", "redis-cli", "--ping"]
+  #     interval: 30s
+  #     timeout: 5s
+  #     retries: 3
+  #   env_file:
+  #     - .env
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         memory: 256M
+  #   security_opt:
+  #     - no-new-privileges=true
+  #   volumes:
+  #     - traefik_redis:/data
+  #   networks:
+  #     traefik:
+  #       ipv6_address: "2001:db8:2::6"
+  #       ipv4_address: "172.21.0.6"
 
 #  traefik-manager:
 #    image: ghcr.io/chr0nzz/traefik-manager:latest
