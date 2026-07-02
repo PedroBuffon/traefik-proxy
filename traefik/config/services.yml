@@ -3,27 +3,27 @@ http:
     Bitmagnet-service:
       loadBalancer:
         servers:
-          - url: http://10.84.181.252:3333
+          - url: http://10.84.181.2:3333
 
     Sonarr-service:
       loadBalancer:
         servers:
-          - url: http://10.84.181.252:8989
+          - url: http://10.84.181.2:8989
 
     Radarr-service:
       loadBalancer:
         servers:
-          - url: http://10.84.181.252:7878
+          - url: http://10.84.181.2:7878
 
     Tautulli-service:
       loadBalancer:
         servers:
-          - url: http://10.84.181.252:8181
+          - url: http://10.84.181.2:8181
 
     Prowlarr-service:
       loadBalancer:
         servers:
-          - url: http://10.84.181.252:9696
+          - url: http://10.84.181.2:9696
 
     Pi-Hole-service:
       loadBalancer:
@@ -38,12 +38,12 @@ http:
     Notifiarr-service:
       loadBalancer:
         servers:
-          - url: http://10.84.181.252:5454
+          - url: http://10.84.181.2:5454
 
     qBittorrent-service:
       loadBalancer:
         servers:
-          - url: http://10.84.181.252:2081
+          - url: http://10.84.181.2:7476
 
     Authentik-service:
       loadBalancer:
@@ -139,3 +139,8 @@ http:
       loadBalancer:
         servers:
           - url: http://anubis:8923
+
+    Technitium-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.242:5380

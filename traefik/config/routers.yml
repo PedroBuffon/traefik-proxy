@@ -109,7 +109,6 @@ http:
         certResolver: cloudflare
       middlewares:
         - authentik
-        - qbittorrent
 
     Authentik:
       rule: Host(`auth.buffon.cloud`)
@@ -166,6 +165,8 @@ http:
       service: Nextcloud-service
       tls:
         certResolver: cloudflare
+      middlewares:
+        - nextcloud-secure-headers
 
     N8N:
       rule: Host(`n8n.buffon.cloud`)
@@ -239,5 +240,13 @@ http:
       entryPoints:
         - https
       service: Anubis-service
+      tls:
+        certResolver: cloudflare
+
+    Technitium:
+      rule: Host(`dns.buffon.cloud`)
+      entryPoints:
+        - https
+      service: Technitium-service
       tls:
         certResolver: cloudflare

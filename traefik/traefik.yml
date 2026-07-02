@@ -27,6 +27,7 @@ entryPoints:
     http:
       middlewares:
         - geoblock@file
+        - anubis@file
         - crowdsec@file
       redirections:
         entryPoint:
@@ -43,11 +44,18 @@ entryPoints:
         - "192.168.0.0/16"
         - "::1/128"
         - "fc00::/7"
+    transport:
+      respondingTimeouts:
+        readTimeout: 3610s
     http:
+      encodedCharacters:  
+        allowEncodedSlash: true
+        allowEncodedQuestionMark: true
+        allowEncodedPercent: true
       middlewares:
+        - geoblock@file
         - anubis@file
         - crowdsec@file
-        - geoblock@file
 
   ssh:
     address: "[::]:2222"
