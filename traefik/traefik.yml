@@ -144,7 +144,7 @@ experimental:
   plugins:
     crowdsec:
       moduleName: github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin
-      version: v1.6.0
+      version: v1.7.0-alpha
 
     geoblock:
       moduleName: github.com/PascalMinder/geoblock

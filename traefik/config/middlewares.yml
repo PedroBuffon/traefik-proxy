@@ -15,8 +15,8 @@ http:
           captchaSiteKey: '{{ env "CAPTCHA_SITE_KEY" }}'
           captchaSecretKey: '{{ env "CAPTCHA_SECRET_KEY" }}'
           captchaGracePeriodSeconds: 1800
-          captchaHTMLFilePath: /etc/traefik/html/captcha.html
-          banHTMLFilePath: /etc/traefik/html/ban.html
+          CaptchaFilePath: /etc/traefik/html/captcha.html
+          BanFilePath: /etc/traefik/html/ban.html
           redisCacheEnabled: false
           redisCacheHost: redis:6379
           redisCacheUnreachableBlock: true
@@ -160,7 +160,6 @@ http:
             - FR # France
             - DE # Germany
             - GL # Greenland
-            - HK # Hong Kong
             - HU # Hungary
             - IS # Iceland
             - IE # Ireland

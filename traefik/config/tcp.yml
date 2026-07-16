@@ -8,35 +8,13 @@ tcp:
       tls:
         passthrough: true
 
-    # doh:
-    #   entryPoints:
-    #     - https
-    #   rule: "HostSNI(`dns.buffon.cloud`)"
-    #   service: doh
-    #   tls:
-    #     passthrough: true
-
-    # technitium:
-    #   entryPoints:
-    #     - https
-    #   rule: "HostSNI(`technitium.buffon.cloud`)"
-    #   service: technitium
-    #   tls:
-    #     passthrough: true
-
-    remote-ssh:
+    dns:
       entryPoints:
-        - ssh
-      rule: "HostSNI(`*`)"
+        - https
+      rule: "HostSNI(`dns.buffon.cloud`)"
+      service: dns
       tls:
         passthrough: true
-      service: remote-ssh-service
-
-    # remote-rdp:
-    #   entryPoints:
-    #     - rdp
-    #   rule: "HostSNI(`*`)"
-    #   service: remote-rdp-service
 
   services:
     mailcow-https:
@@ -44,22 +22,7 @@ tcp:
         servers:
           - address: "10.84.181.251:443"
 
-    # doh:
-    #   loadBalancer:
-    #     servers:
-    #       - address: "10.84.181.39:443"
-
-    # technitium:
-    #   loadBalancer:
-    #     servers:
-    #       - address: "10.84.181.39:53443"
-
-    remote-ssh-service:
+    dns:
       loadBalancer:
         servers:
-          - address: "10.84.181.2:22"
-
-    # remote-rdp-service:
-    #   loadBalancer:
-    #     servers:
-    #       - address: "10.84.181.5:3389"
+          - address: "10.84.181.242:443"

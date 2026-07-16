@@ -144,3 +144,8 @@ http:
       loadBalancer:
         servers:
           - url: http://10.84.181.242:5380
+
+    Infisical-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.2:8082

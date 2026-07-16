@@ -244,9 +244,17 @@ http:
         certResolver: cloudflare
 
     Technitium:
-      rule: Host(`dns.buffon.cloud`)
+      rule: Host(`technitium.buffon.cloud`)
       entryPoints:
         - https
       service: Technitium-service
+      tls:
+        certResolver: cloudflare
+
+    Infisical:
+      rule: Host(`infisical.buffon.cloud`)
+      entryPoints:
+        - https
+      service: Infisical-service
       tls:
         certResolver: cloudflare
