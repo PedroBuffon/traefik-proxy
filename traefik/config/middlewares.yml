@@ -23,7 +23,7 @@ http:
 
     authentik:
       forwardAuth:
-        address: http://10.84.181.243:9000/outpost.goauthentik.io/auth/traefik
+        address: http://10.84.181.2:3004/outpost.goauthentik.io/auth/traefik
         trustForwardHeader: true
         maxResponseBodySize: 1048576 # 1MB
         authResponseHeaders:
@@ -45,56 +45,36 @@ http:
 
     anubis:
       forwardAuth:
-        address: http://anubis:8923/.within.website/x/cmd/anubis/api/check
+        address: http://anubis:8080/.within.website/x/cmd/anubis/api/check
         trustForwardHeader: true
-        maxResponseBodySize: 1048576 # 1MB
-        authRequestHeaders:
-          - X-Forwarded-Proto
-          - X-Forwarded-Host
-          - X-Forwarded-Uri
-          - X-Forwarded-For
-        authResponseHeaders:
-          - X-Forwarded-User
-          - X-Forwarded-Email
+        maxResponseBodySize: 1048576
 
-    security-headers:
+    searxng-headers:
       headers:
-
-        # HSTS
         stsSeconds: 31536000
         stsIncludeSubdomains: true
         stsPreload: true
         forceSTSHeader: true
-
-        # MIME sniffing
         contentTypeNosniff: true
-
-        # XSS
         browserXssFilter: true
-
-        # Referrer policy
         referrerPolicy: "strict-origin-when-cross-origin"
-
-        # Permissions policy
         permissionsPolicy: "camera=(), microphone=(), geolocation=()"
-
-        # Disable framing
         frameDeny: true
 
-    strict-csp:
+    searxng-csp:
       headers:
-        # CSP
         contentSecurityPolicy: >-
-          default-src 'self';
+          upgrade-insecure-requests;
+          default-src 'none';
           script-src 'self';
           style-src 'self' 'unsafe-inline';
-          img-src 'self' data: https:;
-          font-src 'self' data:;
-          connect-src 'self' https: wss:;
-          object-src 'none';
+          form-action 'self' https:;
+          font-src 'self';
+          frame-ancestors 'self';
           base-uri 'self';
-          form-action 'self';
-          frame-ancestors 'none';
+          connect-src 'self';
+          img-src * data:;
+          frame-src https:;
 
     nextcloud-secure-headers:
       headers:
@@ -107,12 +87,10 @@ http:
     local-only:
       ipAllowList:
         sourceRange:
-          - "127.0.0.1/32"
-          - "10.0.0.0/8"
-          - "192.168.0.0/16"
-          - "172.16.0.0/12"
-          - "::1/128"
-          - "fc00::/7"
+          - "10.84.181.0/24"
+          - "192.168.2.0/24"
+          - "2804:10fc:200:e100::/56"
+          - "177.152.32.38/32"
 
     geoblock:
       plugin:

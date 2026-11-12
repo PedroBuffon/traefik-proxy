@@ -3,16 +3,8 @@ tcp:
     mailcow-https:
       entryPoints:
         - https
-      rule: "HostSNI(`mail.buffon.cloud`) || HostSNI(`autoconfig.buffon.cloud`) || HostSNI(`autodiscover.buffon.cloud`)"
+      rule: "HostSNI(`mail.buffon.cloud`) || HostSNI(`autoconfig.buffon.cloud`) || HostSNI(`autodiscover.buffon.cloud`) || HostSNI(`mta-sts.buffon.cloud`)"
       service: mailcow-https
-      tls:
-        passthrough: true
-
-    dns:
-      entryPoints:
-        - https
-      rule: "HostSNI(`dns.buffon.cloud`)"
-      service: dns
       tls:
         passthrough: true
 
@@ -21,8 +13,3 @@ tcp:
       loadBalancer:
         servers:
           - address: "10.84.181.251:443"
-
-    dns:
-      loadBalancer:
-        servers:
-          - address: "10.84.181.242:443"

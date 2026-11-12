@@ -25,16 +25,6 @@ http:
         servers:
           - url: http://10.84.181.2:9696
 
-    Pi-Hole-service:
-      loadBalancer:
-        servers:
-          - url: http://10.84.181.245:80
-
-    Pi-Hole_Backup-service:
-      loadBalancer:
-        servers:
-          - url: http://10.84.181.242:80
-
     Notifiarr-service:
       loadBalancer:
         servers:
@@ -48,17 +38,17 @@ http:
     Authentik-service:
       loadBalancer:
         servers:
-          - url: http://10.84.181.243:9000
-
-    Grafana-service:
-      loadBalancer:
-        servers:
-          - url: http://10.84.181.240:3000
+          - url: http://10.84.181.2:3004
 
     Yamtrack-service:
       loadBalancer:
         servers:
           - url: http://10.84.181.2:8001
+
+    stirling-pdf-service:
+      loadBalancer:
+        servers:
+          - url: http://10.84.181.2:8082
 
     Shinkro-service:
       loadBalancer:
@@ -71,17 +61,11 @@ http:
         servers:
           - url: https://10.84.181.254:8006
 
-    Portainer-service:
+    Dockhand-service:
       loadBalancer:
-        serversTransport: insecure
         servers:
-          - url: https://10.84.181.2:9443
+          - url: http://10.84.181.2:10000
 
-    PVE Nuc-service:
-      loadBalancer:
-        serversTransport: insecure
-        servers:
-          - url: https://10.84.181.253:8006
 
     Nextcloud-service:
       loadBalancer:
@@ -91,13 +75,13 @@ http:
     N8N-service:
       loadBalancer:
         servers:
-          - url: http://10.84.181.244:5678
+          - url: http://10.84.181.2:5678
 
     PBS-service:
       loadBalancer:
         serversTransport: insecure
         servers:
-          - url: https://10.84.181.230:8007
+          - url: https://10.84.181.252:8007
 
     Speedtest-service:
       loadBalancer:
@@ -108,12 +92,12 @@ http:
       loadBalancer:
         serversTransport: insecure
         servers:
-          - url: https://10.84.181.247:8000
+          - url: http://10.84.181.2:8083
 
     Gitea-service:
       loadBalancer:
         servers:
-          - url: http://10.84.181.249:3000
+          - url: http://10.84.181.251:8080
 
     searXNG-service:
       loadBalancer:
@@ -123,29 +107,19 @@ http:
     Plex-service:
       loadBalancer:
         servers:
-          - url: http://10.84.181.5:32400
-
-    Traefik-Manager-service:
-      loadBalancer:
-        servers:
-          - url: http://10.84.181.2:5000
-
-    Mikrotik-service:
-      loadBalancer:
-        servers:
-          - url: http://10.84.181.1:8888
+          - url: http://10.84.181.2:32400
 
     Anubis-service:
       loadBalancer:
         servers:
-          - url: http://anubis:8923
+          - url: http://anubis:8080
 
     Technitium-service:
       loadBalancer:
         servers:
           - url: http://10.84.181.242:5380
 
-    Infisical-service:
+    dns-service:
       loadBalancer:
         servers:
-          - url: http://10.84.181.2:8082
+          - url: http://10.84.181.242:80

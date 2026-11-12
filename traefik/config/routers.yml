@@ -2,19 +2,19 @@ http:
   routers:
     catchall-router:
       rule: "HostRegexp(`{catchall:.*}`)"
-      priority: 1
       entryPoints:
         - http
         - https
       service: noop@internal
+      priority: 1
 
     ping:
       rule: Path(`/ping`)
+      entryPoints:
+        - https
       service: ping@internal
       middlewares:
         - local-only
-      entryPoints:
-        - https
 
     Bitmagnet:
       rule: Host(`magnet.buffon.cloud`)
@@ -24,7 +24,7 @@ http:
       tls:
         certResolver: cloudflare
       middlewares:
-        - authentik
+        - local-only
 
     Sonarr:
       rule: Host(`sonarr.buffon.cloud`)
@@ -34,8 +34,7 @@ http:
       tls:
         certResolver: cloudflare
       middlewares:
-        - authentik
-        - sonarr
+        - local-only
 
     Radarr:
       rule: Host(`radarr.buffon.cloud`)
@@ -45,8 +44,7 @@ http:
       tls:
         certResolver: cloudflare
       middlewares:
-        - authentik
-        - radarr
+        - local-only
 
     Tautulli:
       rule: Host(`tautulli.buffon.cloud`)
@@ -56,8 +54,7 @@ http:
       tls:
         certResolver: cloudflare
       middlewares:
-        - authentik
-        - tautulli
+        - local-only
 
     Prowlarr:
       rule: Host(`prowlarr.buffon.cloud`)
@@ -67,28 +64,7 @@ http:
       tls:
         certResolver: cloudflare
       middlewares:
-        - authentik
-        - prowlarr
-
-    Pi-Hole:
-      rule: Host(`pihole.buffon.cloud`)
-      entryPoints:
-        - https
-      service: Pi-Hole-service
-      tls:
-        certResolver: cloudflare
-      middlewares:
-        - authentik
-
-    Pi-Hole_Backup:
-      rule: Host(`piholebk.buffon.cloud`)
-      entryPoints:
-        - https
-      service: Pi-Hole_Backup-service
-      tls:
-        certResolver: cloudflare
-      middlewares:
-        - authentik
+        - local-only
 
     Notifiarr:
       rule: Host(`notifiarr.buffon.cloud`)
@@ -98,7 +74,7 @@ http:
       tls:
         certResolver: cloudflare
       middlewares:
-        - authentik
+        - local-only
 
     qBittorrent:
       rule: Host(`torrent.buffon.cloud`)
@@ -108,21 +84,13 @@ http:
       tls:
         certResolver: cloudflare
       middlewares:
-        - authentik
+        - local-only
 
     Authentik:
       rule: Host(`auth.buffon.cloud`)
       entryPoints:
         - https
       service: Authentik-service
-      tls:
-        certResolver: cloudflare
-
-    Grafana:
-      rule: Host(`grafana.buffon.cloud`)
-      entryPoints:
-        - https
-      service: Grafana-service
       tls:
         certResolver: cloudflare
 
@@ -133,6 +101,18 @@ http:
       service: Yamtrack-service
       tls:
         certResolver: cloudflare
+      middlewares:
+        - local-only
+
+    Stirling-PDF:
+      rule: Host(`pdf.buffon.cloud`)
+      entryPoints:
+        - https
+      service: stirling-pdf-service
+      tls:
+        certResolver: cloudflare
+      middlewares:
+        - anubis
 
     Shinkro:
       rule: Host(`shinkro.buffon.cloud`)
@@ -141,6 +121,8 @@ http:
       service: Shinkro-service
       tls:
         certResolver: cloudflare
+      middlewares:
+        - local-only
 
     PVE:
       rule: Host(`pve.buffon.cloud`)
@@ -149,14 +131,18 @@ http:
       service: PVE-service
       tls:
         certResolver: cloudflare
+      middlewares:
+        - local-only
 
-    Portainer:
-      rule: Host(`portainer.buffon.cloud`)
+    Dockhand:
+      rule: Host(`docker.buffon.cloud`)
       entryPoints:
         - https
-      service: Portainer-service
+      service: Dockhand-service
       tls:
         certResolver: cloudflare
+      middlewares:
+        - local-only
 
     Nextcloud:
       rule: Host(`next.buffon.cloud`)
@@ -183,6 +169,8 @@ http:
       service: PBS-service
       tls:
         certResolver: cloudflare
+      middlewares:
+        - local-only
 
     Speedtest:
       rule: Host(`speedtest.buffon.cloud`)
@@ -191,6 +179,8 @@ http:
       service: Speedtest-service
       tls:
         certResolver: cloudflare
+      middlewares:
+        - local-only
 
     Vaultwarden:
       rule: Host(`vault.buffon.cloud`)
@@ -200,38 +190,33 @@ http:
       tls:
         certResolver: cloudflare
 
-    Gitea:
-      rule: Host(`git.buffon.cloud`)
+    Mail-Reports:
+      rule: Host(`mail-report.buffon.cloud`)
       entryPoints:
         - https
-      service: Gitea-service
+      service: Mail-Reports-service
       tls:
         certResolver: cloudflare
+      middlewares:
+        - local-only
 
     searXNG:
-      rule: Host(`buffon.cloud`) || Host(`www.buffon.cloud`)
+      rule: Host(`searxng.buffon.cloud`)
       entryPoints:
         - https
       service: searXNG-service
       tls:
         certResolver: cloudflare
       middlewares:
-        - security-headers
-        - strict-csp
+        # - anubis
+        - searxng-headers
+        - searxng-csp
 
     Plex:
       rule: Host(`plex.buffon.cloud`)
       entryPoints:
         - https
       service: Plex-service
-      tls:
-        certResolver: cloudflare
-
-    Mikrotik:
-      rule: Host(`mikrotik.buffon.cloud`)
-      entryPoints:
-        - https
-      service: Mikrotik-service
       tls:
         certResolver: cloudflare
 
@@ -250,11 +235,13 @@ http:
       service: Technitium-service
       tls:
         certResolver: cloudflare
+      middlewares:
+        - local-only
 
-    Infisical:
-      rule: Host(`infisical.buffon.cloud`)
+    dns:
+      rule: Host(`dns.buffon.cloud`)
       entryPoints:
         - https
-      service: Infisical-service
+      service: dns-service
       tls:
         certResolver: cloudflare
