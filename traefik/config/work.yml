@@ -1,0 +1,30 @@
+# http:
+#   routers:
+#     GLPI:
+#       rule: Host(`suporte.engenhariadocorpo.com.br`)
+#       entryPoints:
+#         - https
+#       service: glpi-service
+#       tls:
+#         certResolver: letsencrypt
+#       middlewares:
+#         - searxng-headers
+
+#     garlic-hub:
+#       rule: Host(`garlic.engenhariadocorpo.com.br`)
+#       entryPoints:
+#         - https
+#       service: garlic-hub-service
+#       tls:
+#         certResolver: letsencrypt
+  
+#   services:
+#     glpi-service:
+#       loadBalancer:
+#         servers:
+#           - url: http://10.84.181.250
+
+#     garlic-hub-service:
+#       loadBalancer:
+#         servers:
+#           - url: http://10.84.181.2:8090

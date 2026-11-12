@@ -13,6 +13,8 @@ metrics:
 entryPoints:
   traefik:
     address: "[::]:8080"
+    http:
+      aliasHeadersStrategy: reject
 
   http:
     address: "[::]:80"
@@ -21,13 +23,15 @@ entryPoints:
         - "127.0.0.1/32"
         - "10.0.0.0/8"
         - "172.16.0.0/12"
+        - "172.21.0.0/16"
         - "192.168.0.0/16"
+        - "2001:db8:2::/64"
         - "::1/128"
         - "fc00::/7"
     http:
+      aliasHeadersStrategy: reject
       middlewares:
-        - geoblock@file
-        - anubis@file
+        # - geoblock@file
         - crowdsec@file
       redirections:
         entryPoint:
@@ -41,30 +45,23 @@ entryPoints:
         - "127.0.0.1/32"
         - "10.0.0.0/8"
         - "172.16.0.0/12"
+        - "172.21.0.0/16"
         - "192.168.0.0/16"
+        - "2001:db8:2::/64"
         - "::1/128"
         - "fc00::/7"
     transport:
       respondingTimeouts:
         readTimeout: 3610s
     http:
+      aliasHeadersStrategy: reject
       encodedCharacters:  
         allowEncodedSlash: true
         allowEncodedQuestionMark: true
         allowEncodedPercent: true
       middlewares:
-        - geoblock@file
-        - anubis@file
+        # - geoblock@file
         - crowdsec@file
-
-  ssh:
-    address: "[::]:2222"
-
-  rdp:
-    address: "[::]:3389"
-
-  rdp-udp:
-    address: "[::]:3389/udp"
 
 api:
   dashboard: true
@@ -75,18 +72,18 @@ ping:
 
 log:
   filePath: /etc/traefik/logs/traefik.log
-  level: INFO
+  level: WARN
   format: json
 
 accessLog:
   filePath: /etc/traefik/logs/access.log
   format: json
   filters:
-    # statusCodes:
-    #   - "200"
-    #   - "300-302"
-    # retryAttempts: true
-    # minDuration: "10ms"
+    statusCodes:
+      - "200"
+      - "300-302"
+    retryAttempts: true
+    minDuration: "10ms"
   fields:
     # Keep all the fields by default
     defaultMode: keep
@@ -140,16 +137,20 @@ certificatesResolvers:
           - "1.1.1.1:53"
           - "1.0.0.1:53"
 
+  # letsencrypt:
+  #   acme:
+  #     email: auxti@engenhariadocorpo.com.br
+  #     storage: /etc/traefik/ssl/letsencrypt/acme.json
+  #     httpChallenge:
+  #       # used during the challenge
+  #       entryPoint: http
+
 experimental:
   plugins:
     crowdsec:
       moduleName: github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin
-      version: v1.7.0-alpha
+      version: v1.8.1
 
     geoblock:
       moduleName: github.com/PascalMinder/geoblock
-      version: v0.3.7
-
-    themepark:
-        moduleName: "github.com/packruler/traefik-themepark"
-        version: "v1.4.2"
+      version: v0.3.8

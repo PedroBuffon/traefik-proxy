@@ -1,6 +1,6 @@
 services:
   traefik:
-    image: traefik:latest
+    image: traefik:v3.7.18
     container_name: traefik
     restart: unless-stopped
     depends_on:
@@ -13,23 +13,20 @@ services:
       - "443:443"
 
       - "8080:8080"
-      - "2222:2222"
-
-      # RDP
-      - "3389:3389/tcp"
-      - "3389:3389/udp"
     deploy:
       resources:
         limits:
           memory: 256M
+    dns:
+      - 1.1.1.1
     volumes:
       - "./traefik:/etc/traefik"
       - "./traefik/plugins-storage:/plugins-storage"
     environment:
-      - TZ
-      - CF_DNS_API_TOKEN
-      - PUID
-      - PGID
+      - TZ=${TZ}
+      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
+      - PUID=${PUID}
+      - PGID=${PGID}
     env_file:
       - .env
     healthcheck:
@@ -43,17 +40,17 @@ services:
         ipv4_address: "172.21.0.2"
 
   crowdsec:
-    image: ghcr.io/crowdsecurity/crowdsec:latest
+    image: ghcr.io/crowdsecurity/crowdsec:v1.8.2
     container_name: crowdsec
     restart: unless-stopped
     security_opt:
       - no-new-privileges=true
     environment:
+      - TZ=${TZ}
+      - GID=${GID}
+      - COLLECTIONS=${COLLECTIONS}
+      - CUSTOM_HOSTNAME=${CUSTOM_HOSTNAME}
       - USER=crowdsec
-      - GID
-      - COLLECTIONS
-      - CUSTOM_HOSTNAME
-      - TZ
     env_file:
       - .env
     expose:
@@ -64,6 +61,8 @@ services:
       resources:
         limits:
           memory: 256M
+    dns:
+      - 1.1.1.1
     volumes:
       - crowdsec_config:/etc/crowdsec:rw
       - crowdsec_data:/var/lib/crowdsec/data:rw
@@ -84,29 +83,45 @@ services:
         ipv6_address: "2001:db8:2::3"
         ipv4_address: "172.21.0.3"
 
-  cs-routeros-bouncer:
-    image: ghcr.io/jmrplens/cs-routeros-bouncer:latest
-    container_name: cs-routeros-bouncer
-    restart: unless-stopped
-    user: "$PUID:$PGID"
-    depends_on:
-      crowdsec:
-        condition: service_healthy
-    ports:
-      - "2112:2112" # Prometheus metrics (optional)
-    volumes:
-      - ./routeros/config.yaml:/etc/cs-routeros-bouncer/config.yaml
-      - ./routeros/logs:/var/log
-    healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:2112/health"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
-    networks:
-      traefik:
-        ipv6_address: "2001:db8:2::7"
-        ipv4_address: "172.21.0.7"
+  # cs-routeros-bouncer:
+  #   image: ghcr.io/jmrplens/cs-routeros-bouncer:latest
+  #   container_name: cs-routeros-bouncer
+  #   restart: unless-stopped
+  #   user: "$PUID:$PGID"
+  #   depends_on:
+  #     crowdsec:
+  #       condition: service_healthy
+  #   dns:
+  #     - 1.1.1.1
+  #   ports:
+  #     - "2112:2112" # Prometheus metrics (optional)
+  #   volumes:
+  #     - ./routeros/config.yaml:/etc/cs-routeros-bouncer/config.yaml
+  #     - ./routeros/logs:/var/log
+  #   healthcheck:
+  #     test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:2112/health"]
+  #     interval: 30s
+  #     timeout: 5s
+  #     retries: 3
+  #     start_period: 10s
+  #   networks:
+  #     traefik:
+  #       ipv6_address: "2001:db8:2::7"
+  #       ipv4_address: "172.21.0.7"
+
+  # whoami:
+  #   image: traefik/whoami:latest
+  #   container_name: whoami_service
+  #   command:
+  #       # It tells whoami to start listening on 2001 instead of 80
+  #       - --port=2001
+  #       - --name=iamfoo
+  #   ports:
+  #     - 2001:2001
+  #   networks:
+  #     traefik:
+  #       ipv6_address: "2001:db8:2::9"
+  #       ipv4_address: "172.21.0.9"
 
   anubis:
     image: ghcr.io/techarohq/anubis:main
@@ -120,15 +135,16 @@ services:
       resources:
         limits:
           memory: 256M
+    dns:
+      - 1.1.1.1
     security_opt:
       - no-new-privileges=true
     expose:
-      - 8923
+      - 8080
     ports:
       - 9191:9090
     environment:
-      - BIND
-      - DIFFICULTY
+      - BIND=${BIND}
       - SERVE_ROBOTS_TXT
       - TARGET
       - POLICY_FNAME
@@ -143,6 +159,7 @@ services:
       - .env
     volumes:
       - ./anubis:/data
+      - ./anubis/logs/anubis.log:/data/logs/anubis.log
     healthcheck:
       test: ["CMD", "anubis", "--healthcheck"]
       interval: 5s
@@ -154,30 +171,32 @@ services:
         ipv6_address: "2001:db8:2::4"
         ipv4_address: "172.21.0.4"
 
-  logrotate:
-    image: samuelrunggaldier/logrotate:latest
-    container_name: logrotate
-    restart: unless-stopped
-    depends_on:
-      crowdsec:
-        condition: service_healthy
-    deploy:
-      resources:
-        limits:
-          memory: 256M
-    security_opt:
-      - no-new-privileges=true
-    volumes:
-      - ./anubis/logs:/logs/anubis
-      - ./crowdsec/logs:/logs/crowdsec
-      - ./traefik/logs:/logs/traefik
-      - ./routeros/logs:/logs/routeros
-    env_file:
-      - .env
-    networks:
-      traefik:
-        ipv6_address: "2001:db8:2::8"
-        ipv4_address: "172.21.0.8"
+  # logrotate:
+  #   image: samuelrunggaldier/logrotate:latest
+  #   container_name: logrotate
+  #   restart: unless-stopped
+  #   depends_on:
+  #     crowdsec:
+  #       condition: service_healthy
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         memory: 256M
+  #   security_opt:
+  #     - no-new-privileges=true
+  #   dns:
+  #     - 1.1.1.1
+  #   volumes:
+  #     - ./anubis/logs:/logs/anubis
+  #     - ./crowdsec/logs:/logs/crowdsec
+  #     - ./traefik/logs:/logs/traefik
+  #     - ./routeros/logs:/logs/routeros
+  #   env_file:
+  #     - .env
+  #   networks:
+  #     traefik:
+  #       ipv6_address: "2001:db8:2::8"
+  #       ipv4_address: "172.21.0.8"
 
   # redis:
   #   image: redis:7-alpine
@@ -209,41 +228,56 @@ services:
   #       ipv6_address: "2001:db8:2::6"
   #       ipv4_address: "172.21.0.6"
 
-#  traefik-manager:
-#    image: ghcr.io/chr0nzz/traefik-manager:latest
-#    container_name: traefik-manager
-#    restart: unless-stopped
-#    security_opt:
-#      - no-new-privileges=true
-#    ports:
-#      - 5000:5000
-#    deploy:
-#      resources:
-#        limits:
-#          memory: 256M
-#    environment:
-#      - COOKIE_SECURE
-#      - RESTART_METHOD
-#      - TRAEFIK_CONTAINER
-#      - STATIC_CONFIG_PATH
-#      - ACME_JSON_PATH
-#      - ACCESS_LOG_PATH
-#    env_file:
-#      - .env
-#    volumes:
-#      - /var/run/docker.sock:/var/run/docker.sock
-#      # Required
-#      - ./traefik/dynamic.yml:/app/config/dynamic.yml
-#      - ./manager/config:/app/config
-#      - ./manager/backups:/app/backups
-#      # Optional monitoring
-#      - ./traefik/traefik.yml:/app/traefik.yml
-#      - ./traefik/ssl/acme.json:/app/acme.json:ro
-#      - ./traefik/logs/access.log:/app/logs/access.log:ro
-#    networks:
-#      traefik:
-#        ipv6_address: "2001:db8:2::5"
-#        ipv4_address: "172.21.0.5"
+  # traefik-manager:
+  #   image: ghcr.io/chr0nzz/traefik-manager:latest
+  #   container_name: traefik-manager
+  #   restart: unless-stopped
+  #   security_opt:
+  #     - no-new-privileges=true
+  #   ports:
+  #     - 5000:5000
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         memory: 256M
+  #   environment:
+  #     - COOKIE_SECURE
+  #     - STATIC_CONFIG_PATH
+  #     - CONFIG_DIR
+  #     - RESTART_METHOD
+  #     - DOCKER_HOST
+  #     - TRAEFIK_CONTAINER
+  #     - ACME_JSON_PATH
+  #     - ACCESS_LOG_PATH
+  #   env_file:
+  #     - .env
+  #   volumes:
+  #     # Required
+  #     - ./traefik/config:/app/config/traefik
+  #     - ./manager/config:/app/config
+  #     - ./manager/backups:/app/backups
+  #     # Optional monitoring
+  #     - ./traefik/ssl/acme.json:/app/acme.json:ro
+  #     - ./traefik/traefik.yml:/app/traefik.yml:ro
+  #     - ./traefik/logs/access.log:/app/logs/access.log:ro
+  #   networks:
+  #     traefik:
+  #       ipv6_address: "2001:db8:2::5"
+  #       ipv4_address: "172.21.0.5"
+
+  # socket-proxy:
+  #   image: ghcr.io/tecnativa/docker-socket-proxy:latest
+  #   container_name: socket-proxy
+  #   restart: unless-stopped
+  #   environment:
+  #     - CONTAINERS=1
+  #     - POST=1
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock:ro
+  #   networks:
+  #     traefik:
+  #       ipv6_address: "2001:db8:2::10"
+  #       ipv4_address: "172.21.0.10"
 
 volumes:
   crowdsec_config:
